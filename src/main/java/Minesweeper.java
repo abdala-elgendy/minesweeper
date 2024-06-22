@@ -20,8 +20,8 @@ public class Minesweeper {
    static int numberOfMines=0;
 
 
-  static  char[][] dashboard = new char[row_size][column_size];
-    static int[][] behind_dash = new int[row_size][column_size];
+ // static  char[][] dashboard = new char[row_size][column_size];
+    static Cell[][] cell = new Cell[row_size][column_size];
 
 
     Minesweeper(int row_size,int column_size){
@@ -32,6 +32,11 @@ public class Minesweeper {
 
         the_number_of_cells=column_size*row_size;
 
+        for(int a=0;a<row_size;++a){
+            for(int s=0;s<column_size;++s) {
+                cell[a][s]=new Cell(a,s);
+            }
+            }
 
     }
 
@@ -39,7 +44,7 @@ public class Minesweeper {
     public static void printall() {
         for (int a = 0; a <row_size ; ++a) {
             for (int s = 0; s < column_size; ++s) {
-                System.out.print(dashboard[a][s]);
+                System.out.print(cell[a][s].show);
                 System.out.print(" ");
             }
             System.out.print("\n");
@@ -61,13 +66,13 @@ public class Minesweeper {
 
                 int x = traverse_rows[a] + dx, y = traverse_columns[a] + dy;
                 if (x < 0 || y < 0 || x >= row_size || y >= column_size) continue;
-                if (dashboard[x][y] == ' ') continue;
-                else if (behind_dash[x][y] >= 1) {
+                if (cell[x][y].show == '.') continue;
+                else if (cell[x][y].current_value >= 1) {
                     --the_number_of_cells;
-                    dashboard[x][y] = (char) ('0'+behind_dash[x][y]);
+                    cell[x][y].show = (char) ('0'+cell[x][y].current_value);
                     continue;
                 }
-                dashboard[x][y] = ' ';
+                cell[x][y].show = '.';
                 --the_number_of_cells;
                 st.push(new pair(x, y));
             }
@@ -78,8 +83,8 @@ public class Minesweeper {
 
         for (int a = 0; a <row_size; ++a) {
             for (int s = 0; s < column_size; ++s) {
-                dashboard[a][s] = 'X';
-                behind_dash[a][s] = 0;
+                cell[a][s].show = 'X';
+                cell[a][s].current_value = 0;
             }
         }
 
@@ -92,14 +97,14 @@ public class Minesweeper {
         int randomNumber = random.nextInt(4);  // generate random number of mines
 
 
-        behind_dash[dx - 1][dy - 1] = randomNumber;
-        dashboard[dx - 1][dy - 1] = (char) (behind_dash[dx - 1][dy - 1] + '0');
+        cell[dx - 1][dy - 1].current_value = randomNumber;
+        cell[dx - 1][dy - 1].show = (char) (cell[dx - 1][dy - 1].current_value + '0');
         printall();
 
 
-        behind_dash[dx - 1][dy - 1] = emptyCell; //to ensure we didn't make Mine in this position
+       cell[dx - 1][dy - 1].current_value = emptyCell; //to ensure we didn't make Mine in this position
 
-        dashboard[dx - 1][dy - 1] = (char) ( '0'+randomNumber );
+        cell[dx - 1][dy - 1].show = (char) ( '0'+randomNumber );
 
 
          numberOfMines -= randomNumber;
@@ -112,7 +117,7 @@ public class Minesweeper {
             for (int a = 0; a < 8; ++a) {
                 if (dx + traverse_rows[a] >= 0 && dx + traverse_rows[a] < 9
                         && dy + traverse_columns[a] >= 0 && dy + traverse_columns[a] < 9) {
-                    behind_dash[dx + traverse_rows[a]][dy + traverse_columns[a]] = emptyCell; // you can not make mine here
+                    cell[dx + traverse_rows[a]][dy + traverse_columns[a]].current_value = emptyCell; // you can not make mine here
                 }
             }
         } else {
@@ -128,9 +133,10 @@ public class Minesweeper {
                             dy + traverse_columns[a] >= 0
                             && dy + traverse_columns[a] < row_size) {
 
-                        if (behind_dash[dx + traverse_rows[a]][dy + traverse_columns[a]] != Mine)
+                        if (cell[dx + traverse_rows[a]][dy +
+                                traverse_columns[a]].current_value != Mine)
                          {
-                            behind_dash[dx + traverse_rows[a]][dy + traverse_columns[a]] = Mine; // there is mine here
+                           cell[dx + traverse_rows[a]][dy + traverse_columns[a]].current_value = Mine; // there is mine here
 
                             --randomNumber;
                         }
@@ -144,8 +150,8 @@ public class Minesweeper {
             int x = random.nextInt(row_size);
             int y = random.nextInt(column_size);
 
-            if (behind_dash[x][y] != emptyCell && behind_dash[x][y] != Mine) {
-                behind_dash[x][y] = Mine;
+            if (cell[x][y].current_value != emptyCell && cell[x][y].current_value != Mine) {
+                cell[x][y].current_value = Mine;
                 --numberOfMines;
             }
         }
@@ -158,12 +164,12 @@ public class Minesweeper {
                     int x = a + traverse_rows[traverse], y = s + traverse_columns[traverse];
                     if (x < 0 || y < 0
                             || x >= row_size || y >= column_size ||
-                            dashboard[a][s]==Mine) {
+                            cell[a][s].show==Mine) {
                         continue;
                     }
-                    if (behind_dash[x][y] == Mine) {
-                        if(behind_dash[a][s]==-1)behind_dash[a][s]=0;
-                        behind_dash[a][s]++;
+                    if (cell[x][y].current_value == Mine) {
+                        if(cell[a][s].current_value==-1)cell[a][s].current_value=0;
+                        cell[a][s].current_value++;
                     }
                 }
             }
@@ -217,32 +223,33 @@ public class Minesweeper {
 
             if (operation == 1) {
 
-                if (behind_dash[dx - 1][dy - 1] == Mine) {
+                if (cell[dx - 1][dy - 1].current_value == Mine) {
 
                     System.out.println("you are lose");
                     break;
-                } else if (behind_dash[dx - 1][dy - 1] == emptyCell||behind_dash[dx-1][dy-1]==0) {
+                } else if (cell[dx - 1][dy - 1].current_value == emptyCell
+                        ||cell[dx-1][dy-1].current_value==0) {
 
-                    dashboard[dx - 1][dy - 1] = ' ';
+                    cell[dx - 1][dy - 1].show = '.';
                     dfs(dx - 1, dy - 1);
 
                 } else {
 
                     --the_number_of_cells;
-                    dashboard[dx - 1][dy - 1] = (char) ('0' + behind_dash[dx - 1][dy - 1]);
+                    cell[dx - 1][dy - 1].show = (char) ('0' + cell[dx - 1][dy - 1].current_value);
                 }
 
             } else if (operation == 2) {
 
                 ++flag;
-                dashboard[dx - 1][dy - 1] = '?';
+                cell[dx - 1][dy - 1].show = '?';
                 if (flag == the_number_of_cells) {
                     System.out.println("you win the game now flag equel mines");
                     break;
                 }
             } else {
                 flag--;
-                dashboard[dx - 1][dy - 1] = 'X';
+                cell[dx - 1][dy - 1].show = 'X';
             }
             printall();
 
