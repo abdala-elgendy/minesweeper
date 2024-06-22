@@ -67,9 +67,9 @@ public class Minesweeper {
                 int x = traverse_rows[a] + dx, y = traverse_columns[a] + dy;
                 if (x < 0 || y < 0 || x >= row_size || y >= column_size) continue;
                 if (cell[x][y].show == '.') continue;
-                else if (cell[x][y].current_value >= 1) {
+                else if (cell[x][y]. mineCount >= 1) {
                     --the_number_of_cells;
-                    cell[x][y].show = (char) ('0'+cell[x][y].current_value);
+                    cell[x][y].show = (char) ('0'+cell[x][y]. mineCount);
                     continue;
                 }
                 cell[x][y].show = '.';
@@ -84,7 +84,7 @@ public class Minesweeper {
         for (int a = 0; a <row_size; ++a) {
             for (int s = 0; s < column_size; ++s) {
                 cell[a][s].show = 'X';
-                cell[a][s].current_value = 0;
+                cell[a][s]. mineCount = 0;
             }
         }
 
@@ -97,12 +97,12 @@ public class Minesweeper {
         int randomNumber = random.nextInt(4);  // generate random number of mines
 
 
-        cell[dx - 1][dy - 1].current_value = randomNumber;
-        cell[dx - 1][dy - 1].show = (char) (cell[dx - 1][dy - 1].current_value + '0');
+        cell[dx - 1][dy - 1]. mineCount = randomNumber;
+        cell[dx - 1][dy - 1].show = (char) (cell[dx - 1][dy - 1]. mineCount + '0');
         printall();
 
 
-       cell[dx - 1][dy - 1].current_value = emptyCell; //to ensure we didn't make Mine in this position
+       cell[dx - 1][dy - 1]. mineCount = emptyCell; //to ensure we didn't make Mine in this position
 
         cell[dx - 1][dy - 1].show = (char) ( '0'+randomNumber );
 
@@ -117,7 +117,7 @@ public class Minesweeper {
             for (int a = 0; a < 8; ++a) {
                 if (dx + traverse_rows[a] >= 0 && dx + traverse_rows[a] < 9
                         && dy + traverse_columns[a] >= 0 && dy + traverse_columns[a] < 9) {
-                    cell[dx + traverse_rows[a]][dy + traverse_columns[a]].current_value = emptyCell; // you can not make mine here
+                    cell[dx + traverse_rows[a]][dy + traverse_columns[a]]. mineCount = emptyCell; // you can not make mine here
                 }
             }
         } else {
@@ -134,9 +134,9 @@ public class Minesweeper {
                             && dy + traverse_columns[a] < row_size) {
 
                         if (cell[dx + traverse_rows[a]][dy +
-                                traverse_columns[a]].current_value != Mine)
+                                traverse_columns[a]]. mineCount != Mine)
                          {
-                           cell[dx + traverse_rows[a]][dy + traverse_columns[a]].current_value = Mine; // there is mine here
+                           cell[dx + traverse_rows[a]][dy + traverse_columns[a]]. mineCount = Mine; // there is mine here
 
                             --randomNumber;
                         }
@@ -150,8 +150,8 @@ public class Minesweeper {
             int x = random.nextInt(row_size);
             int y = random.nextInt(column_size);
 
-            if (cell[x][y].current_value != emptyCell && cell[x][y].current_value != Mine) {
-                cell[x][y].current_value = Mine;
+            if (cell[x][y]. mineCount != emptyCell && cell[x][y]. mineCount != Mine) {
+                cell[x][y]. mineCount = Mine;
                 --numberOfMines;
             }
         }
@@ -167,15 +167,15 @@ public class Minesweeper {
                             cell[a][s].show==Mine) {
                         continue;
                     }
-                    if (cell[x][y].current_value == Mine) {
-                        if(cell[a][s].current_value==-1)cell[a][s].current_value=0;
-                        cell[a][s].current_value++;
+                    if (cell[x][y]. mineCount == Mine) {
+                        if(cell[a][s]. mineCount==-1)cell[a][s]. mineCount=0;
+                        cell[a][s]. mineCount++;
                     }
                 }
             }
         }
 
-// if your choosed cell is empty
+// if your chosen cell is empty
         if (ok) {
             dfs(dx, dy);
         }
@@ -223,12 +223,12 @@ public class Minesweeper {
 
             if (operation == 1) {
 
-                if (cell[dx - 1][dy - 1].current_value == Mine) {
+                if (cell[dx - 1][dy - 1]. mineCount == Mine) {
 
                     System.out.println("you are lose");
                     break;
-                } else if (cell[dx - 1][dy - 1].current_value == emptyCell
-                        ||cell[dx-1][dy-1].current_value==0) {
+                } else if (cell[dx - 1][dy - 1]. mineCount == emptyCell
+                        ||cell[dx-1][dy-1]. mineCount==0) {
 
                     cell[dx - 1][dy - 1].show = '.';
                     dfs(dx - 1, dy - 1);
@@ -236,7 +236,7 @@ public class Minesweeper {
                 } else {
 
                     --the_number_of_cells;
-                    cell[dx - 1][dy - 1].show = (char) ('0' + cell[dx - 1][dy - 1].current_value);
+                    cell[dx - 1][dy - 1].show = (char) ('0' + cell[dx - 1][dy - 1]. mineCount);
                 }
 
             } else if (operation == 2) {
