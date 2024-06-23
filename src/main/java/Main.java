@@ -16,7 +16,7 @@ public class Main {
      column_size=sc.nextInt();
  }
 Minesweeper  my_game=new Minesweeper(row_size,column_size);
- my_game.setTheNumberOfCells(row_size*column_size);
+
 my_game.start();
     }
 }

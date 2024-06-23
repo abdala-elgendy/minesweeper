@@ -40,9 +40,7 @@ public class Minesweeper {
 
     }
 
-    public void setTheNumberOfCells(int theNumberOfCells) {
-        this.theNumberOfCells = theNumberOfCells;
-    }
+
 
     public void printMyDashBoard() {
         for (int a = 0; a < rowSize; ++a) {
@@ -195,6 +193,7 @@ public class Minesweeper {
                 "3 delete flag\n"
         );
         while (true) {
+
 
 
             System.out.println("select dx ,dy");
