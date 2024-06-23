@@ -1,4 +1,5 @@
 
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Random;
 import java.util.Stack;
@@ -6,45 +7,48 @@ import java.util.Stack;
 public class Minesweeper {
 
 
-    static int[] traverse_rows = new int[]{-1, -1, -1, 1, 1, 1, 0, 0};
-    static int[] traverse_columns = new int[]{1, 0, -1, 1, 0, -1, -1, 1};
-    static Scanner sc = new Scanner(System.in);
-    static Random random = new Random();
-
-  //  static int not_mine_here=1;
-    static int Mine=-2;
-    static int emptyCell=-1;
-    static  int the_number_of_cells =0;
-    static  int row_size=33;
-    static  int column_size=33;
-   static int numberOfMines=0;
+    final static int[] traverse_rows = new int[]{-1, -1, -1, 1, 1, 1, 0, 0};
+    final static int[] traverse_columns = new int[]{1, 0, -1, 1, 0, -1, -1, 1};
 
 
- // static  char[][] dashboard = new char[row_size][column_size];
-    static Cell[][] cell = new Cell[row_size][column_size];
+
+    private final  Scanner sc ;
+    private  int theNumberOfCells ;
+    private final int rowSize ;
+    private final int columnSize ;
+
+     Cell[][] cell;
+    final Random random;
+    private int numberOfMines ;
 
 
-    Minesweeper(int row_size,int column_size){
+    Minesweeper(int rowSize, int columnSize) {
+        random = new Random();
+        sc = new Scanner(System.in);
+        numberOfMines = 1 + (rowSize * columnSize) / 10;
+        this.rowSize = rowSize;
+        this.columnSize = columnSize;
+        cell = new Cell[rowSize][columnSize];
 
-        numberOfMines = 1+(row_size* column_size)/ 10;
-        Minesweeper.row_size =row_size;
-        Minesweeper.column_size =column_size;
+        theNumberOfCells = columnSize * rowSize;
 
-        the_number_of_cells=column_size*row_size;
-
-        for(int a=0;a<row_size;++a){
-            for(int s=0;s<column_size;++s) {
-                cell[a][s]=new Cell(a,s);
+        for (int a = 0; a < rowSize; ++a) {
+            for (int s = 0; s < columnSize; ++s) {
+                cell[a][s] = new Cell(a, s);
             }
-            }
+        }
 
     }
 
+    public void setTheNumberOfCells(int theNumberOfCells) {
+        this.theNumberOfCells = theNumberOfCells;
+    }
 
-    public static void printall() {
-        for (int a = 0; a <row_size ; ++a) {
-            for (int s = 0; s < column_size; ++s) {
-                System.out.print(cell[a][s].show);
+    public void printMyDashBoard() {
+        for (int a = 0; a < rowSize; ++a) {
+
+            for (int s = 0; s < columnSize; ++s) {
+                System.out.print(cell[a][s].getShow());
                 System.out.print(" ");
             }
             System.out.print("\n");
@@ -52,41 +56,34 @@ public class Minesweeper {
 
     }
 
-    public static void dfs(int dx, int dy) {
-        Stack<pair> st = new Stack<>();
-        --the_number_of_cells;
-        pair now = new pair(dx , dy );
+    public  void dfs(int dx, int dy) {
+        Stack<Pair> st = new Stack<>();
+        --theNumberOfCells;
+        Pair now = new Pair(dx, dy);
         st.push(now);
         while (!st.empty()) {
-         now=st.peek();
-         dx=now.x;
-         dy=now.y;
-         st.pop();
+            now = st.peek();
+            dx = now.x;
+            dy = now.y;
+            st.pop();
             for (int a = 0; a < 8; ++a) {
 
                 int x = traverse_rows[a] + dx, y = traverse_columns[a] + dy;
-                if (x < 0 || y < 0 || x >= row_size || y >= column_size) continue;
-                if (cell[x][y].show == '.') continue;
-                else if (cell[x][y]. mineCount >= 1) {
-                    --the_number_of_cells;
-                    cell[x][y].show = (char) ('0'+cell[x][y]. mineCount);
+                if (x < 0 || y < 0 || x >= rowSize || y >= columnSize) continue;
+                if (cell[x][y].getShow() == '.') continue;
+                else if (cell[x][y].getMineCount() >= 1) {
+                    --theNumberOfCells;
+                    cell[x][y].setShow((char) ('0' + cell[x][y].getMineCount()));
                     continue;
-                }
-                cell[x][y].show = '.';
-                --the_number_of_cells;
-                st.push(new pair(x, y));
+                } else if (Objects.equals(cell[x][y].getCellStatus(), "Mine")) continue;
+                cell[x][y].setShow('.');
+                --theNumberOfCells;
+                st.push(new Pair(x, y));
             }
         }
     }
 
-    public  void start() {
-
-        for (int a = 0; a <row_size; ++a) {
-            for (int s = 0; s < column_size; ++s) {
-                cell[a][s].show = 'X';
-                cell[a][s]. mineCount = 0;
-            }
-        }
+    public void start() {
 
 
         System.out.println("please enter first cell to open \n***********************");
@@ -97,17 +94,17 @@ public class Minesweeper {
         int randomNumber = random.nextInt(4);  // generate random number of mines
 
 
-        cell[dx - 1][dy - 1]. mineCount = randomNumber;
-        cell[dx - 1][dy - 1].show = (char) (cell[dx - 1][dy - 1]. mineCount + '0');
-        printall();
+        cell[dx - 1][dy - 1].setMineCount(randomNumber);
+        cell[dx - 1][dy - 1].setShow((char) (cell[dx - 1][dy - 1].getMineCount() + '0'));
+        printMyDashBoard();
 
 
-       cell[dx - 1][dy - 1]. mineCount = emptyCell; //to ensure we didn't make Mine in this position
+        cell[dx - 1][dy - 1].setMineStatus("emptyCell"); //to ensure we didn't make Mine in this position
 
-        cell[dx - 1][dy - 1].show = (char) ( '0'+randomNumber );
+        cell[dx - 1][dy - 1].setShow((char) ('0' + randomNumber));
 
 
-         numberOfMines -= randomNumber;
+        numberOfMines -= randomNumber;
         boolean ok = false;
         dx--;
         dy--;
@@ -115,9 +112,9 @@ public class Minesweeper {
             ok = true;
 
             for (int a = 0; a < 8; ++a) {
-                if (dx + traverse_rows[a] >= 0 && dx + traverse_rows[a] < 9
-                        && dy + traverse_columns[a] >= 0 && dy + traverse_columns[a] < 9) {
-                    cell[dx + traverse_rows[a]][dy + traverse_columns[a]]. mineCount = emptyCell; // you can not make mine here
+                if (dx + traverse_rows[a] >= 0 && dx + traverse_rows[a] < rowSize
+                        && dy + traverse_columns[a] >= 0 && dy + traverse_columns[a] < columnSize) {
+                    cell[dx + traverse_rows[a]][dy + traverse_columns[a]].setMineStatus(" emptyCell");
                 }
             }
         } else {
@@ -128,15 +125,14 @@ public class Minesweeper {
 
                     boolean take = random.nextBoolean();
 
-                    if (take && dx +traverse_rows[a] >= 0
-                            && dx + traverse_rows[a] < row_size &&
+                    if (take && dx + traverse_rows[a] >= 0
+                            && dx + traverse_rows[a] < rowSize &&
                             dy + traverse_columns[a] >= 0
-                            && dy + traverse_columns[a] < row_size) {
+                            && dy + traverse_columns[a] < rowSize) {
 
-                        if (cell[dx + traverse_rows[a]][dy +
-                                traverse_columns[a]]. mineCount != Mine)
-                         {
-                           cell[dx + traverse_rows[a]][dy + traverse_columns[a]]. mineCount = Mine; // there is mine here
+                        if (!Objects.equals(cell[dx + traverse_rows[a]][dy +
+                                traverse_columns[a]].getCellStatus(), "Mine")) {
+                            cell[dx + traverse_rows[a]][dy + traverse_columns[a]].setMineStatus("Mine"); // there is mine here
 
                             --randomNumber;
                         }
@@ -147,29 +143,29 @@ public class Minesweeper {
 
         while (numberOfMines > 0) {
 
-            int x = random.nextInt(row_size);
-            int y = random.nextInt(column_size);
+            int x = random.nextInt(rowSize);
+            int y = random.nextInt(columnSize);
 
-            if (cell[x][y]. mineCount != emptyCell && cell[x][y]. mineCount != Mine) {
-                cell[x][y]. mineCount = Mine;
+            if (Objects.equals(cell[x][y].getCellStatus(), "default")) {
+                cell[x][y].setMineStatus("Mine");
                 --numberOfMines;
             }
         }
 
         // make numbers of mines around each cell
-        for (int a = 0; a < row_size; ++a) {
-            for (int s = 0; s < column_size; ++s) {
+        for (int a = 0; a < rowSize; ++a) {
+            for (int s = 0; s < columnSize; ++s) {
                 for (int traverse = 0; traverse < 8; ++traverse) {
 
                     int x = a + traverse_rows[traverse], y = s + traverse_columns[traverse];
                     if (x < 0 || y < 0
-                            || x >= row_size || y >= column_size ||
-                            cell[a][s].show==Mine) {
+                            || x >= rowSize || y >= columnSize ||
+                            Objects.equals(cell[a][s].getCellStatus(), "Mine")) {
                         continue;
                     }
-                    if (cell[x][y]. mineCount == Mine) {
-                        if(cell[a][s]. mineCount==-1)cell[a][s]. mineCount=0;
-                        cell[a][s]. mineCount++;
+                    if (Objects.equals(cell[x][y].getCellStatus(), "Mine")) {
+
+                        cell[a][s].setMineCount(cell[a][s].getMineCount() + 1);
                     }
                 }
             }
@@ -180,19 +176,20 @@ public class Minesweeper {
             dfs(dx, dy);
         }
 
-        System.out.println("your dashboard contains these features \n" +
-                "closed cell : 'X' \n" +
-                "Open cell that is empty :'' \n" +
-                "Open cell with a number from 1 to 8 : " +
-                "the number of mines around the cell\n" +
-                " Cell with a flag : 'F'\n"
+        System.out.println("""
+                your dashboard contains these features\s
+                closed cell : 'X'\s
+                Open cell that is empty :''\s
+                Open cell with a number from 1 to 8 : the number of mines around the cell
+                 Cell with a flag : 'F'
+                """
         );
 
-        printall();
+        printMyDashBoard();
 
         int flag = 0;
 
-        System.out.println("select operation you want \n" +
+        System.out.println("select operation you want3\n" +
                 "1 open this place\n" +
                 "2 flag this place \n" +
                 "3 delete flag\n"
@@ -207,55 +204,57 @@ public class Minesweeper {
             dy = sc.nextInt();
 
 
-            while(dx<=0||dy<=0||dx>row_size||dy>column_size){
+            while (dx <= 0 || dy <= 0 || dx > rowSize || dy > columnSize) {
                 System.out.println("enter valid cell");
-                dx=sc.nextInt();
-                dy=sc.nextInt();
+                dx = sc.nextInt();
+                dy = sc.nextInt();
             }
 
             System.out.println("please enter operation you want 1,2,3");
 
             int operation = sc.nextInt();
-           while(operation<=0||operation>3){
-               System.out.println("please enter valid operation");
-               operation=sc.nextInt();
-           }
+            while (operation <= 0 || operation > 3) {
+                System.out.println("please enter valid operation");
+                operation = sc.nextInt();
+            }
 
             if (operation == 1) {
 
-                if (cell[dx - 1][dy - 1]. mineCount == Mine) {
-
+                if (cell[dx - 1][dy - 1].getCellStatus() == "Mine") {
+                    cell[dx - 1][dy - 1].setShow('M');
                     System.out.println("you are lose");
                     break;
-                } else if (cell[dx - 1][dy - 1]. mineCount == emptyCell
-                        ||cell[dx-1][dy-1]. mineCount==0) {
+                } else if (cell[dx - 1][dy - 1].getCellStatus() == "emptyCell"
+                        || cell[dx - 1][dy - 1].getMineCount() == 0) {
 
-                    cell[dx - 1][dy - 1].show = '.';
+                    cell[dx - 1][dy - 1].setShow('.');
                     dfs(dx - 1, dy - 1);
 
                 } else {
 
-                    --the_number_of_cells;
-                    cell[dx - 1][dy - 1].show = (char) ('0' + cell[dx - 1][dy - 1]. mineCount);
+                    --theNumberOfCells;
+                    cell[dx - 1][dy - 1].setShow
+                            ((char) ('0' + cell[dx - 1][dy - 1].getMineCount()));
                 }
 
             } else if (operation == 2) {
 
                 ++flag;
-                cell[dx - 1][dy - 1].show = '?';
-                if (flag == the_number_of_cells) {
+                cell[dx - 1][dy - 1].setShow('?');
+                if (flag == theNumberOfCells) {
                     System.out.println("you win the game now flag equel mines");
                     break;
                 }
             } else {
                 flag--;
-                cell[dx - 1][dy - 1].show = 'X';
+                cell[dx - 1][dy - 1].setShow('X');
             }
-            printall();
+            printMyDashBoard();
 
 
         }
-        printall();
+        printMyDashBoard();
+
 
     }
 }

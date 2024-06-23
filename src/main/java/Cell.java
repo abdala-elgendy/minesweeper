@@ -1,17 +1,51 @@
 public class Cell {
 
-    int row,column;
-    char show;
-    int mineCount;
-  Cell(int row ,int column){
+    private final int row;
+    private final int column;
+    private char show;
+    private int mineCount;
+    private String cellStatus;
 
-      this.row=row;
+    Cell(int row, int column) {
 
-      this.column=column;
+        this.row = row;
 
-      show='X';
+        this.column = column;
 
-      mineCount=0; // -2 -> mine    -1 -> empty  cant make mine in it
-                      // else the number of mines around this cell
-  }
+        show = 'X';
+        cellStatus= "default";
+        mineCount = 0;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public String getCellStatus() {
+        return cellStatus;
+    }
+
+    public void setMineStatus(String mineStatus) {
+        this.cellStatus = mineStatus;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public char getShow() {
+        return show;
+    }
+
+    public void setShow(char show) {
+        this.show = show;
+    }
+
+    public int getMineCount() {
+        return mineCount;
+    }
+
+    public void setMineCount(int mineCount) {
+        this.mineCount = mineCount;
+    }
 }
